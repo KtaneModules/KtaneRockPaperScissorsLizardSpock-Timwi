@@ -101,7 +101,7 @@ GameObject:
   - 114: {fileID: 11496072}
   - 114: {fileID: 11489182}
   m_Layer: 0
-  m_Name: RockPaperScissorsLizardSpock
+  m_Name: RockPaperScissorsLizardSpockModule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1348,21 +1348,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 127088}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6077fdaf0a38ecd40a0d533d9d9ad42c, type: 3}
+  m_Script: {fileID: 11500000, guid: 9f4645cfce4270240a9333190e36b794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Bomb: {fileID: 11489324}
   Module: {fileID: 11429752}
   Audio: {fileID: 11496072}
-  Regions:
-  - {fileID: 11460140}
-  - {fileID: 11407850}
-  - {fileID: 11443536}
-  - {fileID: 11439902}
-  - {fileID: 11431236}
-  - {fileID: 11498032}
-  - {fileID: 11410936}
-  - {fileID: 11408760}
+  Selectables: []
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1
