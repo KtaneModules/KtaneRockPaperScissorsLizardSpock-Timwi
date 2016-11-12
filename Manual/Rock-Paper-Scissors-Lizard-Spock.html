@@ -12,15 +12,26 @@
         .squeeze {
             position: absolute;
             white-space: nowrap;
-            transform: scaleX(.935);
+            transform: scaleX(.937);
             transform-origin: left;
             text-decoration: inherit;
+        }
+        table.rock-paper-scissors-lizard-spock {
+            width: 100%;
+        }
+        table.rock-paper-scissors-lizard-spock td {
+            white-space: nowrap;
+            vertical-align: top;
+        }
+        .skip {
+            font-size: 10pt;
+            font-weight: normal;
         }
     </style>
 </head>
 <body>
     <div class="section">
-        <div class="page page-bg-01">
+        <div class="page page-bg-04">
             <div class="page-header">
                 <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
                 <span class="page-header-section-title">Rock-Paper-Scissors-Lizard-Spock</span>
@@ -30,11 +41,11 @@
                 <h2>On&nbsp;<span class='squeeze'>the&nbsp;<span
                                   class='squeeze'>Subject&nbsp;<span
                                   class='squeeze'>of&nbsp;<span
-                                  class='squeeze'>Rock-<span
-                                  class='squeeze'>Paper-<span
-                                  class='squeeze'>Scissors-<span
-                                  class='squeeze'>Lizard-<span
-                                  class='squeeze'>Spock</span></span></span></span></span></span></span></span></h2>
+                                  class='squeeze'>Rock<span
+                                  class='squeeze'>-Paper<span
+                                  class='squeeze'>-Scissors<span
+                                  class='squeeze'>-Lizard<span
+                                  class='squeeze'>-Spock</span></span></span></span></span></span></span></span></h2>
 
                 <p class="flavour-text">
                     Anecdotal evidence suggests that in the game of Rock-Paper-Scissors,
@@ -47,27 +58,34 @@
                     Rock crushes lizard. Lizard poisons Spock. Spock smashes scissors.
                     Scissors decapitates lizard. Lizard eats paper. Paper disproves Spock.
                     Spock vaporizes rock. And, as it always has, rock crushes scissors.
-                <p>
-                    Determine which icon is presented by the bomb, then click the two
-                    icons that beat it in any order.
 
-                <table>
-                    <tr><th>Condition                                            <th>Bomb’s choice </tr>
-                    <tr><td>If there is an RJ-45 port,                           <td>Rock.         </tr>
-                    <tr><td>Otherwise, if there is a parallel and a serial port, <td>Spock.        </tr>
-                    <tr><td>Otherwise, if there is a parallel port,              <td>Paper.        </tr>
-                    <tr><td>Otherwise, if there is a serial port,                <td>Scissors.     </tr>
-                    <tr><td>Otherwise, if there is any lit indicator,            <td>Lizard.       </tr>
-                    <tr><td>Otherwise, if there is a Stereo RCA port,            <td>Rock.         </tr>
-                    <tr><td>Otherwise, if there is a PS/2 port,                  <td>Paper.        </tr>
-                    <tr><td>Otherwise, if there is an unlit SND indicator,       <td>Spock.        </tr>
-                    <tr><td>Otherwise, if there is an unlit SIG indicator,       <td>Scissors.     </tr>
-                    <tr><td>Otherwise, if there is any other unlit indicator,    <td>Lizard.       </tr>
-                    <tr><td>Otherwise, if the serial number contains a vowel,    <td>Rock.         </tr>
-                    <tr><td>Otherwise, if there is a DVI-D port,                 <td>Paper.        </tr>
-                    <tr><td>Otherwise, if there is an even number of batteries,  <td>Scissors.     </tr>
-                    <tr><td>Otherwise, if there is a Type AA battery,            <td>Lizard.       </tr>
-                    <tr><td>Otherwise,                                           <td>Spock.        </tr>
+                <p>
+                    First, determine the decoy. If the five icons are arranged in a
+                    pentagon, there is no decoy. Otherwise, one of them is clearly in the
+                    middle, or the middle in a row of three. That one is the decoy.
+
+                <p>
+                    Next, go through the rows of the following table and determine the
+                    highest-scoring icon in each row. Stop at the first row in which
+                    there’s no tie and the highest-scoring icon is not the decoy.
+                    Then press the icons on the module that beat this icon.
+                    If no row applies, press all icons except the decoy.
+
+                <table class='rock-paper-scissors-lizard-spock'>
+                    <tr><th># of occurrences of:    <th>Rock        <th>Paper       <th>Scissors    <th>Lizard      <th>Spock       </tr>
+                    <tr><th><div>serial number letter</div>
+                            <div class='skip'>Skip this row if the serial number contains an X or Y.</div>
+                                                    <td>R, O        <td>P, A        <td>S, I        <td>L, Z        <td>C, K        </tr>
+                    <tr><th><div>port</div>
+                            <div class='skip'>Skip this row if a PS/2 port is present.</div>
+                                                    <td>RJ-45       <td>Parallel    <td>Serial      <td>DVI-D       <td>Stereo RCA  </tr>
+                    <tr><th><div>lit indicator</div>
+                            <div class='skip'>Skip this row if a lit TRN&nbsp;indicator is present.</div>
+                                                    <td>FRK, FRQ    <td>BOB, IND    <td>CAR, SIG    <td>CLR, NSA    <td>SND, MSA    </tr>
+                    <tr><th><div>unlit indicator</div>
+                            <div class='skip'>Skip this row if an unlit TRN&nbsp;indicator is present.</div>
+                                                    <td>FRK, FRQ    <td>BOB, IND    <td>CAR, SIG    <td>CLR, NSA    <td>SND, MSA    </tr>
+                    <tr><th>serial number digit     <td>0, 5        <td>3, 6        <td>1, 9        <td>2, 8        <td>4, 7        </tr>
                 </table>
             </div>
         </div>
