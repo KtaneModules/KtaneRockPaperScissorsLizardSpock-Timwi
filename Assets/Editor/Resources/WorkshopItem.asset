@@ -11,9 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cf2299c8864afe4ab42466f546ae20d, type: 3}
   m_Name: WorkshopItem
   m_EditorClassIdentifier: 
-  WorkshopPublishedFileID: 793073877
+  WorkshopPublishedFileID: 798194678
   Title: Rock-Paper-Scissors-Lizard-Spock
-  Description: 'Scissors cuts paper. Paper covers rock. Rock crushes lizard. Lizard poisons Spock. Spock smashes scissors. Scissors decapitates lizard. Lizard eats paper. Paper disproves Spock. Spock vaporizes rock. And, as it always has, rock crushes scissors.
+  Description: 'Scissors cuts paper. Paper covers rock. Rock crushes lizard. Lizard
+    poisons Spock. Spock smashes scissors. Scissors decapitates lizard. Lizard eats
+    paper. Paper disproves Spock. Spock vaporizes rock. And, as it always has, rock
+    crushes scissors.
 
 
     Module created by Timwi.
