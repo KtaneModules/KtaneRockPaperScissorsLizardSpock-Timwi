@@ -1104,7 +1104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ModuleType: RockPaperScissorsLizardSpockModule
-  ModuleDisplayName: Rock-Paper-Scissors-Lizard-Spock
+  ModuleDisplayName: Rock-Paper-Scissors-L.-Sp.
   RequiresTimerVisibility: 0
 --- !u!114 &11444418
 MonoBehaviour:
