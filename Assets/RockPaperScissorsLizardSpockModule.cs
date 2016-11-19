@@ -39,8 +39,9 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             var j = i;
-            var obj = _all[j];
-            _all[j].GetComponent<KMSelectable>().OnInteract += delegate { HandlePress(j, obj); return false; };
+            var obj = _all[i];
+            var selectable = obj.GetComponent<KMSelectable>();
+            selectable.OnInteract += delegate { selectable.AddInteractionPunch(); HandlePress(j, obj); return false; };
         }
 
         // Now shuffle them randomly
