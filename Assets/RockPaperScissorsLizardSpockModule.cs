@@ -30,6 +30,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
 
     public Material MatCorrect;
     public Material MatWrong;
+    public KMSelectable MainSelectable;
 
     void Start()
     {
@@ -54,36 +55,42 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         }
 
         // Choose one of the possible arrangements
+        int?[] children = null;
         switch (Rnd.Range(0, 10))
         {
             case 0: // pentagon
                 for (int i = 0; i < 5; i++)
                     _all[i].LocalTranslate(new Vector3((float) (.055 * Math.Sin(Math.PI / 5 * 2 * i)), 0, (float) (-.055 * Math.Cos(Math.PI / 5 * 2 * i))));
                 _decoy = null;
+                children = new int?[] { 1, 0, 4, 2, 2, 3 };
                 break;
 
             case 1: // in two rows
                 for (int i = 0; i < 5; i++)
                     _all[i].LocalTranslate(new Vector3((i < 2 ? i : i - 3) * .055f, 0, (i < 2 ? -.035f : .035f)));
                 _decoy = _all[3];
+                children = new int?[] { 1, 0, null, 4, 3, 2 };
                 break;
 
             case 2: // in two columns
                 for (int i = 0; i < 5; i++)
                     _all[i].LocalTranslate(new Vector3((i < 2 ? -.035f : .035f), 0, (i < 2 ? i : i - 3) * .055f));
                 _decoy = _all[3];
+                children = new int?[] { 2, null, null, 3, 0, null, 4, 1, null };
                 break;
 
             case 3: // X, bottom
                 for (int i = 0; i < 5; i++)
                     _all[i].LocalTranslate(new Vector3(.055f * (2 * i % 3 - 1), 0, .035f * (2 * i / 3 - 1) + .015f));
                 _decoy = _all[2];
+                children = new int?[] { 1, 2, 0, 4, 2, 3 };
                 break;
 
             case 4: // X, left
                 for (int i = 0; i < 5; i++)
                     _all[i].LocalTranslate(new Vector3(.035f * (2 * i % 3 - 1) + .02f, 0, .055f * (2 * i / 3 - 1)));
                 _decoy = _all[2];
+                children = new int?[] { 1, 0, null, 2, 2, null, 4, 3, null };
                 break;
 
             case 5: // quarter circle with a bottom-left pivot
@@ -91,6 +98,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                     _all[i].LocalTranslate(new Vector3((float) (-.07 * Math.Sin(Math.PI * (i * .25 - .125)) + .02), 0, (float) (-.07 * Math.Cos(Math.PI * (i * .25 - .125)) + .02)));
                 _all[4].LocalTranslate(new Vector3(.02f, 0, .02f));
                 _decoy = _all[4];
+                children = new int?[] { 0, 1, null, 4, 4, 2, 4, 4, 3 };
                 break;
 
             case 6: // quarter circle with a top-right pivot
@@ -98,6 +106,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                     _all[i].LocalTranslate(new Vector3((float) (.07 * Math.Sin(Math.PI * (i * .25 - .125)) - .02), 0, (float) (.07 * Math.Cos(Math.PI * (i * .25 - .125)) - .02)));
                 _all[4].LocalTranslate(new Vector3(-.02f, 0, -.02f));
                 _decoy = _all[4];
+                children = new int?[] { 3, 4, 4, 2, 4, 4, null, 1, 0 };
                 break;
 
             case 7: // +
@@ -106,6 +115,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                 _all[2].LocalTranslate(new Vector3(-.055f, 0, 0));
                 _all[3].LocalTranslate(new Vector3(0, 0, -.055f));
                 _decoy = _all[4];
+                children = new int?[] { null, 3, null, 0, 4, 2, null, 1, null };
                 break;
 
             case 8: // Z
@@ -114,6 +124,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                 _all[2].LocalTranslate(new Vector3(-.055f, 0, .055f));
                 _all[3].LocalTranslate(new Vector3(0, 0, -.055f));
                 _decoy = _all[4];
+                children = new int?[] { 0, 3, null, null, 4, null, null, 1, 2 };
                 break;
 
             case 9: // S
@@ -122,8 +133,12 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                 _all[2].LocalTranslate(new Vector3(-.055f, 0, .0275f));
                 _all[3].LocalTranslate(new Vector3(0, 0, -.055f));
                 _decoy = _all[4];
+                children = new int?[] { 0, 3, null, 0, 4, 2, null, 1, 2 };
                 break;
         }
+
+        MainSelectable.Children = children.Select(nint => nint == null ? null : _all[nint.Value].GetComponent<KMSelectable>()).ToArray();
+        MainSelectable.UpdateChildren();
     }
 
     /// <summary>

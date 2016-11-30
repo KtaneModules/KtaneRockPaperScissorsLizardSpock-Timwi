@@ -1093,7 +1093,7 @@ MonoBehaviour:
   - {fileID: 11446486}
   - {fileID: 11474994}
   IsPassThrough: 0
-  ChildRowLength: 1
+  ChildRowLength: 3
   Highlight: {fileID: 11464240}
   SelectableColliders: []
   DefaultSelectableIndex: 0
@@ -1316,6 +1316,7 @@ MonoBehaviour:
   Spock: {fileID: 462004}
   MatCorrect: {fileID: 2100000, guid: dc88aabafc1426546a70eff78dedba1f, type: 2}
   MatWrong: {fileID: 2100000, guid: b28be792f1c603544865d025fd783a7d, type: 2}
+  MainSelectable: {fileID: 11420650}
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1
