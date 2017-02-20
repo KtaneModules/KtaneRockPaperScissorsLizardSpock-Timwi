@@ -32,9 +32,12 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
     public Material MatWrong;
     public KMSelectable MainSelectable;
 
+    private static int _moduleIdCounter = 1;
+    private int _moduleId;
+
     void Start()
     {
-        Debug.Log("[Rock-Paper-Scissors-Lizard-Spock] Started");
+        _moduleId = _moduleIdCounter++;
         Module.OnActivate += ActivateModule;
         _all = new[] { Rock, Paper, Scissors, Lizard, Spock };
         for (int i = 0; i < 5; i++)
@@ -156,12 +159,9 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
 
     void ActivateModule()
     {
-        Debug.Log("[Rock-Paper-Scissors-Lizard-Spock] Activated");
-
         var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var digits = "0123456789";
         var serial = Bomb.GetSerialNumber() ?? new string("??DLXD".Select(ch => (ch == 'L' ? letters : ch == 'D' ? digits : ch == '?' ? letters + digits : ch.ToString()).Apply(chs => chs[Rnd.Range(0, chs.Length)])).ToArray());
-        Debug.Log("[Rock-Paper-Scissors-Lizard-Spock] Serial number: " + serial);
 
         var decoy = Array.IndexOf(new[] { Rock, Paper, Scissors, Lizard, Spock }, _decoy);
 
@@ -219,7 +219,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
 
         if (result != null)
         {
-            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock] {0} wins on account of Row #{1}.", _names[result.Winners[0]], result.Row + 1);
+            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{2}] {0} wins on account of Row #{1}.", _names[result.Winners[0]], result.Row + 1, _moduleId);
 
             switch (result.Winners[0])
             {
@@ -232,11 +232,11 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         }
         else
         {
-            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock] No winner{0}.", decoy == -1 ? " and no decoy" : null);
+            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] No winner{0}.", decoy == -1 ? " and no decoy" : null, _moduleId);
             _mustPress = Enumerable.Range(0, 5).Where(i => i != decoy).ToArray();
         }
 
-        Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock] Must press: {0}", string.Join(", ", _mustPress.Select(m => _names[m]).ToArray()));
+        Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] Must press: {0}", string.Join(", ", _mustPress.Select(m => _names[m]).ToArray()), _moduleId);
     }
 
     private static T[] newArray<T>(params T[] array) { return array; }
@@ -251,15 +251,19 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         if (!_mustPress.Contains(index))
         {
             obj.GetComponent<MeshRenderer>().material = MatWrong;
-            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock] {0} is wrong.", _names[index]);
+            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is wrong.", _names[index], _moduleId);
             Module.HandleStrike();
         }
         else
         {
             obj.GetComponent<MeshRenderer>().material = MatCorrect;
-            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock] {0} is correct.", _names[index]);
+            var solved = false;
             if (!_mustPress.Except(_pressed).Any())
+            {
+                solved = true;
                 Module.HandlePass();
+            }
+            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is correct.{2}", _names[index], _moduleId, solved ? " Module solved." : "");
         }
     }
 }
