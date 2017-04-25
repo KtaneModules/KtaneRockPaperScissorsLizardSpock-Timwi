@@ -266,4 +266,26 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
             Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is correct.{2}", _names[index], _moduleId, solved ? " Module solved." : "");
         }
     }
+
+    KMSelectable[] ProcessTwitchCommand(string command)
+    {
+        var pieces = command.Trim().ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (pieces.Length == 0 || pieces[0] != "press")
+            return null;
+
+        var list = new List<Transform>();
+        foreach (var piece in pieces.Skip(1))
+        {
+            switch (piece)
+            {
+                case "rock": list.Add(Rock); break;
+                case "paper": list.Add(Paper); break;
+                case "scissors": list.Add(Scissors); break;
+                case "lizard": list.Add(Lizard); break;
+                case "spock": list.Add(Spock); break;
+                default: return null;
+            }
+        }
+        return list.Select(tr => tr.GetComponent<KMSelectable>()).ToArray();
+    }
 }
