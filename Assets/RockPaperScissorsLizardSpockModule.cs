@@ -140,6 +140,11 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                 break;
         }
 
+        if (_decoy != null)
+            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{0}] Decoy is {1}.", _moduleId, _names[Array.IndexOf(new[] { Rock, Paper, Scissors, Lizard, Spock }, _decoy)]);
+        else
+            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{0}] There is no decoy.", _moduleId);
+
         MainSelectable.Children = children.Select(nint => nint == null ? null : _all[nint.Value].GetComponent<KMSelectable>()).ToArray();
         MainSelectable.UpdateChildren();
     }
