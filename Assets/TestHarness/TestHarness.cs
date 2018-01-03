@@ -1,9 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
-using UnityEditor;
 using UnityEngine;
 
 public class FakeBombInfo : MonoBehaviour
@@ -151,7 +150,7 @@ public class FakeBombInfo : MonoBehaviour
 
     void Awake()
     {
-        const int numWidgets = 10;
+        const int numWidgets = 5;
         widgets = new Widget[numWidgets];
         for (int a = 0; a < numWidgets; a++)
         {
@@ -293,7 +292,14 @@ public class FakeBombInfo : MonoBehaviour
     {
         List<string> responses = new List<string>();
         if (queryKey == KMBombInfo.QUERYKEY_GET_SERIAL_NUMBER)
-            responses.Add(JsonConvert.SerializeObject(new Dictionary<string, string>() { { "serial", serial } }));
+        {
+            responses.Add(JsonConvert.SerializeObject((object) new Dictionary<string, string>()
+            {
+                {
+                    "serial", serial
+                }
+            }));
+        }
         foreach (Widget w in widgets)
         {
             string r = w.GetResult(queryKey, queryInfo);
@@ -361,10 +367,12 @@ public class TestHarness : MonoBehaviour
     TestSelectableArea currentSelectableArea;
 
     AudioSource audioSource;
-    List<AudioClip> audioClips;
+    public List<AudioClip> AudioClips;
 
     void Awake()
     {
+        PrepareLights();
+
         fakeInfo = gameObject.AddComponent<FakeBombInfo>();
         fakeInfo.ActivateLights += delegate ()
         {
@@ -402,7 +410,7 @@ public class TestHarness : MonoBehaviour
                 if (f.FieldType.Equals(typeof(KMGameInfo)))
                 {
                     KMGameInfo component = (KMGameInfo) f.GetValue(s);
-                    fakeInfo.OnLights += on => component.OnLightsChange(on);
+                    component.OnLightsChange += new KMGameInfo.KMLightsChangeDelegate(fakeInfo.OnLights);
                     //component.OnAlarmClockChange += new KMGameInfo.KMAlarmClockChangeDelegate(fakeInfo.OnAlarm);
                     continue;
                 }
@@ -427,9 +435,8 @@ public class TestHarness : MonoBehaviour
                 if (f.FieldType.Equals(typeof(KMBombInfo)))
                 {
                     KMBombInfo component = (KMBombInfo) f.GetValue(s);
-                    if (component.OnBombExploded != null) fakeInfo.Detonate += new FakeBombInfo.OnDetonate(component.OnBombExploded);
-                    if (component.OnBombSolved != null) fakeInfo.HandleSolved += new FakeBombInfo.OnSolved(component.OnBombSolved);
-                    continue;
+                    fakeInfo.Detonate += delegate { if (component.OnBombExploded != null) component.OnBombExploded(); };
+                    fakeInfo.HandleSolved += delegate { if (component.OnBombSolved != null) component.OnBombSolved(); };
                 }
             }
         }
@@ -493,21 +500,6 @@ public class TestHarness : MonoBehaviour
 
         currentSelectable.ActivateChildSelectableAreas();
 
-
-        //Load all the audio clips in the asset database
-        audioClips = new List<AudioClip>();
-        string[] audioClipAssetGUIDs = AssetDatabase.FindAssets("t:AudioClip");
-
-        foreach (var guid in audioClipAssetGUIDs)
-        {
-            AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(guid));
-
-            if (clip != null)
-            {
-                audioClips.Add(clip);
-            }
-        }
-
         audioSource = gameObject.AddComponent<AudioSource>();
         KMAudio[] kmAudios = FindObjectsOfType<KMAudio>();
         foreach (KMAudio kmAudio in kmAudios)
@@ -518,9 +510,9 @@ public class TestHarness : MonoBehaviour
 
     protected void PlaySoundHandler(string clipName, Transform t)
     {
-        if (audioClips.Count > 0)
+        if (AudioClips != null && AudioClips.Count > 0)
         {
-            AudioClip clip = audioClips.Where(a => a.name == clipName).First();
+            AudioClip clip = AudioClips.Where(a => a.name == clipName).First();
 
             if (clip != null)
             {
@@ -806,32 +798,44 @@ public class TestHarness : MonoBehaviour
                     MethodInfo method = type.GetMethod("ProcessTwitchCommand", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                     if (method != null)
-                    {
                         StartCoroutine(SimulateModule(component, module.transform, method, command));
-                    }
                 }
             }
             command = "";
         }
     }
 
+    private Light testLight;
+
+    public void PrepareLights()
+    {
+        foreach (Light l in FindObjectsOfType<Light>())
+        {
+            if (l.transform.parent == null) Destroy(l.gameObject);
+        }
+
+        GameObject o = new GameObject("Light");
+        o.transform.localPosition = new Vector3(0, 3, 0);
+        o.transform.localRotation = Quaternion.Euler(new Vector3(130, -30, 0));
+        testLight = o.AddComponent<Light>();
+        testLight.type = LightType.Directional;
+    }
+
     public void TurnLightsOn()
     {
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
         RenderSettings.ambientIntensity = 1f;
         DynamicGI.UpdateEnvironment();
 
-        foreach (Light l in FindObjectsOfType<Light>())
-            if (l.transform.parent == null)
-                l.enabled = true;
+        testLight.enabled = true;
     }
 
     public void TurnLightsOff()
     {
-        RenderSettings.ambientIntensity = 0.2f;
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
+        RenderSettings.ambientIntensity = 0.1f;
         DynamicGI.UpdateEnvironment();
 
-        foreach (Light l in FindObjectsOfType<Light>())
-            if (l.transform.parent == null)
-                l.enabled = false;
+        testLight.enabled = false;
     }
 }

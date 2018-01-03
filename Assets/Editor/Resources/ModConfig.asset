@@ -13,5 +13,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: RockPaperScissorsLizardSpock
   title: Rock-Paper-Scissors-Lizard-Spock
+  description: 'Scissors cuts paper. Paper covers rock. Rock crushes lizard. Lizard
+    poisons Spock. Spock smashes scissors. Scissors decapitates lizard. Lizard eats
+    paper. Paper disproves Spock. Spock vaporizes rock. And, as it always has, rock
+    crushes scissors.
+
+
+    Module created by Timwi.
+
+
+    [url=http://ktane.timwi.de/PDF/Rock-Paper-Scissors-Lizard-Spock.pdf]Manual PDF[/url]
+
+    [url=http://ktane.timwi.de/HTML/Rock-Paper-Scissors-Lizard-Spock.html]Manual HTML[/url]
+
+    [b][url=https://www.youtube.com/watch?v=zrWtZtRrjas]Tutorial video[/url] (thanks
+    Elias!)[/b]'
   version: 1.0
   outputFolder: build
+  previewImage: {fileID: 2800000, guid: bd5c1f4881f57d54481b44e4c8a7779a, type: 3}
