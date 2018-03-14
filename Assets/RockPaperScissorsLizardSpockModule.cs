@@ -272,14 +272,19 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         }
     }
 
+#pragma warning disable 414
+    private string TwitchHelpMessage = @"Submit your answer with “!{0} Scissors Lizard”.";
+#pragma warning restore 414
+
     KMSelectable[] ProcessTwitchCommand(string command)
     {
         var pieces = command.Trim().ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        if (pieces.Length == 0 || pieces[0] != "press")
-            return null;
+        var skip = 0;
+        if (pieces.Length > 0 && pieces[0] == "press")
+            skip = 1;
 
         var list = new List<Transform>();
-        foreach (var piece in pieces.Skip(1))
+        foreach (var piece in pieces.Skip(skip))
         {
             switch (piece)
             {
@@ -291,6 +296,6 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                 default: return null;
             }
         }
-        return list.Select(tr => tr.GetComponent<KMSelectable>()).ToArray();
+        return list.Count > 0 ? list.Select(tr => tr.GetComponent<KMSelectable>()).ToArray() : null;
     }
 }
