@@ -40,12 +40,13 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         _moduleId = _moduleIdCounter++;
         Module.OnActivate += ActivateModule;
         _all = new[] { Rock, Paper, Scissors, Lizard, Spock };
+        var names = "Rock,Paper,Scissors,Lizard,Spock".Split(',');
         for (int i = 0; i < 5; i++)
         {
             var j = i;
             var obj = _all[i];
             var selectable = obj.GetComponent<KMSelectable>();
-            selectable.OnInteract += delegate { selectable.AddInteractionPunch(); HandlePress(j, obj); return false; };
+            selectable.OnInteract += GetButtonPressHandler(j, selectable, names[j]);
         }
 
         // Now shuffle them randomly
@@ -246,30 +247,37 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
 
     private static T[] newArray<T>(params T[] array) { return array; }
 
-    private void HandlePress(int index, Transform obj)
+    private KMSelectable.OnInteractHandler GetButtonPressHandler(int index, KMSelectable obj, string sound)
     {
-        if (_mustPress == null || !_pressed.Add(index))
-            return;
-
-        obj.localPosition = new Vector3(obj.localPosition.x, 0.014f, obj.localPosition.z);
-
-        if (!_mustPress.Contains(index))
+        return delegate
         {
-            obj.GetComponent<MeshRenderer>().material = MatWrong;
-            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is wrong.", _names[index], _moduleId);
-            Module.HandleStrike();
-        }
-        else
-        {
-            obj.GetComponent<MeshRenderer>().material = MatCorrect;
-            var solved = false;
-            if (!_mustPress.Except(_pressed).Any())
+            if (_mustPress == null || !_pressed.Add(index))
+                return false;
+
+            obj.AddInteractionPunch();
+            obj.transform.localPosition = new Vector3(obj.transform.localPosition.x, 0.014f, obj.transform.localPosition.z);
+
+            if (!_mustPress.Contains(index))
             {
-                solved = true;
-                Module.HandlePass();
+                obj.GetComponent<MeshRenderer>().material = MatWrong;
+                Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is wrong.", _names[index], _moduleId);
+                Module.HandleStrike();
             }
-            Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is correct.{2}", _names[index], _moduleId, solved ? " Module solved." : "");
-        }
+            else
+            {
+                Audio.PlaySoundAtTransform(sound, obj.transform);
+                obj.GetComponent<MeshRenderer>().material = MatCorrect;
+                var solved = false;
+                if (!_mustPress.Except(_pressed).Any())
+                {
+                    solved = true;
+                    _mustPress = null;
+                    Module.HandlePass();
+                }
+                Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{1}] {0} is correct.{2}", _names[index], _moduleId, solved ? " Module solved." : "");
+            }
+            return false;
+        };
     }
 
 #pragma warning disable 414
