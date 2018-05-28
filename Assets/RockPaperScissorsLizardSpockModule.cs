@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using RockPaperScissorsLizardSpock;
@@ -284,7 +285,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
     private string TwitchHelpMessage = @"Submit your answer with “!{0} Scissors Lizard”.";
 #pragma warning restore 414
 
-    KMSelectable[] ProcessTwitchCommand(string command)
+    IEnumerator ProcessTwitchCommand(string command)
     {
         var pieces = command.Trim().ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         var skip = 0;
@@ -301,9 +302,16 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
                 case "scissors": list.Add(Scissors); break;
                 case "lizard": list.Add(Lizard); break;
                 case "spock": list.Add(Spock); break;
-                default: return null;
+                default: yield break;
             }
         }
-        return list.Count > 0 ? list.Select(tr => tr.GetComponent<KMSelectable>()).ToArray() : null;
+        if (list.Count == 0)
+            yield break;
+        yield return null;
+        foreach (var item in list)
+        {
+            item.GetComponent<KMSelectable>().OnInteract();
+            yield return new WaitForSeconds(.8f);
+        }
     }
 }
