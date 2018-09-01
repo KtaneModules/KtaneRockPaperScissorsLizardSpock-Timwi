@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: 11489324}
   - component: {fileID: 11496072}
   - component: {fileID: 11489182}
+  - component: {fileID: 114389675192005996}
   m_Layer: 0
   m_Name: RockPaperScissorsLizardSpockModule
   m_TagString: Untagged
@@ -1342,6 +1343,7 @@ MonoBehaviour:
   Bomb: {fileID: 11489324}
   Module: {fileID: 11429752}
   Audio: {fileID: 11496072}
+  RuleSeedable: {fileID: 114389675192005996}
   Rock: {fileID: 429484}
   Paper: {fileID: 459052}
   Scissors: {fileID: 491944}
@@ -1538,6 +1540,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames: []
+--- !u!114 &114389675192005996
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 127088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adf69c2de51bd3c43bbd9bc22578ee08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _seed: 1
 --- !u!135 &135000010887450702
 SphereCollider:
   m_ObjectHideFlags: 1

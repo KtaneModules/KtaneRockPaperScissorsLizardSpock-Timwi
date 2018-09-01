@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using KModkit;
 using RockPaperScissorsLizardSpock;
 using UnityEngine;
 using Rnd = UnityEngine.Random;
@@ -15,6 +16,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
     public KMBombInfo Bomb;
     public KMBombModule Module;
     public KMAudio Audio;
+    public KMRuleSeedable RuleSeedable;
 
     public Transform Rock;
     public Transform Paper;
@@ -39,7 +41,6 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
     void Start()
     {
         _moduleId = _moduleIdCounter++;
-        Module.OnActivate += ActivateModule;
         _all = new[] { Rock, Paper, Scissors, Lizard, Spock };
         var names = "Rock,Paper,Scissors,Lizard,Spock".Split(',');
         for (int i = 0; i < 5; i++)
@@ -149,75 +150,66 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
 
         MainSelectable.Children = children.Select(nint => nint == null ? null : _all[nint.Value].GetComponent<KMSelectable>()).ToArray();
         MainSelectable.UpdateChildren();
-    }
 
-    /// <summary>
-    ///     Generates a random string of the specified length, taking characters from the specified arsenal of characters.</summary>
-    /// <param name="length">
-    ///     Length of the string to generate.</param>
-    /// <param name="takeCharactersFrom">
-    ///     Arsenal to take random characters from. (Default is upper- and lower-case letters and digits.)</param>
-    /// <param name="rnd">
-    ///     If not <c>null</c>, uses the specified random number generator.</param>
-    static string GenerateString(int length, string takeCharactersFrom)
-    {
-        return new string(Enumerable.Range(0, length).Select(i => takeCharactersFrom[Rnd.Range(0, takeCharactersFrom.Length)]).ToArray());
-    }
+        // So much for arranging the signs on the module. Now for generating the rules!
+        var rnd = RuleSeedable.GetRNG();
 
-    void ActivateModule()
-    {
-        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        var digits = "0123456789";
-        var serial = Bomb.GetSerialNumber() ?? new string("??DLXD".Select(ch => (ch == 'L' ? letters : ch == 'D' ? digits : ch == '?' ? letters + digits : ch.ToString()).Apply(chs => chs[Rnd.Range(0, chs.Length)])).ToArray());
+        var letters = "SYHREAGCUPMZKNBJQDFLXVWIOT".OrderBy(ch => rnd.NextDouble()).ToArray();
+        var ports = new[] { Port.RJ45, Port.StereoRCA, Port.DVI, Port.Parallel, Port.Serial, Port.PS2 }.OrderBy(port => rnd.NextDouble()).ToArray();
+        var litIndicators = new[] { "IND", "TRN", "SIG", "CAR", "NSA", "FRK", "CLR", "MSA", "SND", "FRQ", "BOB" }.OrderBy(ind => rnd.NextDouble()).ToArray();
+        var unlitIndicators = new[] { "CLR", "CAR", "FRQ", "IND", "MSA", "NSA", "TRN", "SIG", "SND", "BOB", "FRK" }.OrderBy(ind => rnd.NextDouble()).ToArray();
+        var digits = "9574831602".OrderBy(ch => rnd.NextDouble()).ToArray();
 
+        var serial = Bomb.GetSerialNumber();
         var decoy = Array.IndexOf(new[] { Rock, Paper, Scissors, Lizard, Spock }, _decoy);
 
         var scores = newArray(
-            // Row 1: serial number letter
-            serial.Contains('X') || serial.Contains('Y') ? null : newArray(
-                /* Rock */      serial.Count(c => c == 'R' || c == 'O'),
-                /* Paper */     serial.Count(c => c == 'P' || c == 'A'),
-                /* Scissors */  serial.Count(c => c == 'S' || c == 'I'),
-                /* Lizard */    serial.Count(c => c == 'L' || c == 'Z'),
-                /* Spock */     serial.Count(c => c == 'C' || c == 'K')
+            // ports
+            Bomb.GetPortCount(ports[0]) > 0 ? null : newArray(
+                /* Rock */      Bomb.GetPortCount(ports[1]),
+                /* Paper */     Bomb.GetPortCount(ports[2]),
+                /* Scissors */  Bomb.GetPortCount(ports[3]),
+                /* Lizard */    Bomb.GetPortCount(ports[4]),
+                /* Spock */     Bomb.GetPortCount(ports[5])
             ),
 
-            // Row 2: port
-            Bomb.GetPortCount(KMBombInfoExtensions.KnownPortType.PS2) > 0 ? null : newArray(
-                /* Rock */      Bomb.GetPortCount(KMBombInfoExtensions.KnownPortType.RJ45),
-                /* Paper */     Bomb.GetPortCount(KMBombInfoExtensions.KnownPortType.Parallel),
-                /* Scissors */  Bomb.GetPortCount(KMBombInfoExtensions.KnownPortType.Serial),
-                /* Lizard */    Bomb.GetPortCount(KMBombInfoExtensions.KnownPortType.DVI),
-                /* Spock */     Bomb.GetPortCount(KMBombInfoExtensions.KnownPortType.StereoRCA)
-            ),
-
-            // Row 3: lit indicator
-            Bomb.IsIndicatorOn(KMBombInfoExtensions.KnownIndicatorLabel.TRN) ? null : newArray(
-                /* Rock */      Bomb.GetOnIndicators().Count(i => i == "FRK" || i == "FRQ"),
-                /* Paper */     Bomb.GetOnIndicators().Count(i => i == "BOB" || i == "IND"),
-                /* Scissors */  Bomb.GetOnIndicators().Count(i => i == "CAR" || i == "SIG"),
-                /* Lizard */    Bomb.GetOnIndicators().Count(i => i == "CLR" || i == "NSA"),
-                /* Spock */     Bomb.GetOnIndicators().Count(i => i == "SND" || i == "MSA")
-            ),
-
-            // Row 4: unlit indicator
-            Bomb.IsIndicatorOff(KMBombInfoExtensions.KnownIndicatorLabel.TRN) ? null : newArray(
-                /* Rock */      Bomb.GetOffIndicators().Count(i => i == "FRK" || i == "FRQ"),
-                /* Paper */     Bomb.GetOffIndicators().Count(i => i == "BOB" || i == "IND"),
-                /* Scissors */  Bomb.GetOffIndicators().Count(i => i == "CAR" || i == "SIG"),
-                /* Lizard */    Bomb.GetOffIndicators().Count(i => i == "CLR" || i == "NSA"),
-                /* Spock */     Bomb.GetOffIndicators().Count(i => i == "SND" || i == "MSA")
-            ),
-
-            // Row 5: serial number digits
+            // serial number digits
             newArray(
-                /* Rock */      serial.Count(c => c == '0' || c == '5'),
-                /* Paper */     serial.Count(c => c == '3' || c == '6'),
-                /* Scissors */  serial.Count(c => c == '1' || c == '9'),
-                /* Lizard */    serial.Count(c => c == '2' || c == '8'),
-                /* Spock */     serial.Count(c => c == '4' || c == '7')
+                /* Rock */      serial.Count(c => c == digits[0] || c == digits[1]),
+                /* Paper */     serial.Count(c => c == digits[2] || c == digits[3]),
+                /* Scissors */  serial.Count(c => c == digits[4] || c == digits[5]),
+                /* Lizard */    serial.Count(c => c == digits[6] || c == digits[7]),
+                /* Spock */     serial.Count(c => c == digits[8] || c == digits[9])
+            ),
+
+            // unlit indicators
+            Bomb.IsIndicatorOff(unlitIndicators[0]) ? null : newArray(
+                /* Rock */      Bomb.GetOffIndicators().Count(i => i == unlitIndicators[1] || i == unlitIndicators[2]),
+                /* Paper */     Bomb.GetOffIndicators().Count(i => i == unlitIndicators[3] || i == unlitIndicators[4]),
+                /* Scissors */  Bomb.GetOffIndicators().Count(i => i == unlitIndicators[5] || i == unlitIndicators[6]),
+                /* Lizard */    Bomb.GetOffIndicators().Count(i => i == unlitIndicators[7] || i == unlitIndicators[8]),
+                /* Spock */     Bomb.GetOffIndicators().Count(i => i == unlitIndicators[9] || i == unlitIndicators[10])
+            ),
+
+            // serial number letters
+            serial.Contains(letters[0]) || serial.Contains(letters[1]) ? null : newArray(
+                /* Rock */      serial.Count(c => c == letters[2] || c == letters[3]),
+                /* Paper */     serial.Count(c => c == letters[4] || c == letters[5]),
+                /* Scissors */  serial.Count(c => c == letters[6] || c == letters[7]),
+                /* Lizard */    serial.Count(c => c == letters[8] || c == letters[9]),
+                /* Spock */     serial.Count(c => c == letters[10] || c == letters[11])
+            ),
+
+            // lit indicators
+            Bomb.IsIndicatorOn(litIndicators[0]) ? null : newArray(
+                /* Rock */      Bomb.GetOnIndicators().Count(i => i == litIndicators[1] || i == litIndicators[2]),
+                /* Paper */     Bomb.GetOnIndicators().Count(i => i == litIndicators[3] || i == litIndicators[4]),
+                /* Scissors */  Bomb.GetOnIndicators().Count(i => i == litIndicators[5] || i == litIndicators[6]),
+                /* Lizard */    Bomb.GetOnIndicators().Count(i => i == litIndicators[7] || i == litIndicators[8]),
+                /* Spock */     Bomb.GetOnIndicators().Count(i => i == litIndicators[9] || i == litIndicators[10])
             )
-        );
+        )
+            .OrderBy(row => rnd.NextDouble()).ToArray();
 
         var result = scores
             .Select((row, ix) => row == null ? null : row.Max().Apply(maxScore => new { Row = ix, Winners = row.SelectIndexWhere(sc => sc == maxScore).ToArray() }))
@@ -282,7 +274,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
     }
 
 #pragma warning disable 414
-    private string TwitchHelpMessage = @"Submit your answer with “!{0} Scissors Lizard”.";
+    private readonly string TwitchHelpMessage = @"Submit your answer with “!{0} Scissors Lizard”.";
 #pragma warning restore 414
 
     IEnumerator ProcessTwitchCommand(string command)
