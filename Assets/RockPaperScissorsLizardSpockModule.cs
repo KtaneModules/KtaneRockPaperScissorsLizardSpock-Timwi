@@ -153,6 +153,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
 
         // So much for arranging the signs on the module. Now for generating the rules!
         var rnd = RuleSeedable.GetRNG();
+        Debug.LogFormat("[Rock-Paper-Scissors-Lizard-Spock #{0}] Using rule seed: {1}", _moduleId, rnd.Seed);
 
         var letters = "SYHREAGCUPMZKNBJQDFLXVWIOT".OrderBy(ch => rnd.NextDouble()).ToArray();
         var ports = new[] { Port.RJ45, Port.StereoRCA, Port.DVI, Port.Parallel, Port.Serial, Port.PS2 }.OrderBy(port => rnd.NextDouble()).ToArray();
