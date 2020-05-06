@@ -18,14 +18,14 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
     public KMAudio Audio;
     public KMRuleSeedable RuleSeedable;
 
-    public Transform Rock;
-    public Transform Paper;
-    public Transform Scissors;
-    public Transform Lizard;
-    public Transform Spock;
+    public KMSelectable Rock;
+    public KMSelectable Paper;
+    public KMSelectable Scissors;
+    public KMSelectable Lizard;
+    public KMSelectable Spock;
 
-    private Transform[] _all;
-    private Transform _decoy;
+    private KMSelectable[] _all;
+    private KMSelectable _decoy;
     private int[] _mustPress;
     private HashSet<int> _pressed = new HashSet<int>();
 
@@ -44,12 +44,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         _all = new[] { Rock, Paper, Scissors, Lizard, Spock };
         var names = "Rock,Paper,Scissors,Lizard,Spock".Split(',');
         for (int i = 0; i < 5; i++)
-        {
-            var j = i;
-            var obj = _all[i];
-            var selectable = obj.GetComponent<KMSelectable>();
-            selectable.OnInteract += GetButtonPressHandler(j, selectable, names[j]);
-        }
+            _all[i].OnInteract += GetButtonPressHandler(i, _all[i], names[i]);
 
         // Now shuffle them randomly
         for (int i = 4; i > 0; i--)
@@ -66,78 +61,78 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         {
             case 0: // pentagon
                 for (int i = 0; i < 5; i++)
-                    _all[i].LocalTranslate(new Vector3((float) (.055 * Math.Sin(Math.PI / 5 * 2 * i)), 0, (float) (-.055 * Math.Cos(Math.PI / 5 * 2 * i))));
+                    _all[i].transform.LocalTranslate(new Vector3((float) (.055 * Math.Sin(Math.PI / 5 * 2 * i)), 0, (float) (-.055 * Math.Cos(Math.PI / 5 * 2 * i))));
                 _decoy = null;
                 children = new int?[] { 1, 0, 4, 2, 2, 3 };
                 break;
 
             case 1: // in two rows
                 for (int i = 0; i < 5; i++)
-                    _all[i].LocalTranslate(new Vector3((i < 2 ? i : i - 3) * .055f, 0, (i < 2 ? -.035f : .035f)));
+                    _all[i].transform.LocalTranslate(new Vector3((i < 2 ? i : i - 3) * .055f, 0, (i < 2 ? -.035f : .035f)));
                 _decoy = _all[3];
                 children = new int?[] { 1, 0, null, 4, 3, 2 };
                 break;
 
             case 2: // in two columns
                 for (int i = 0; i < 5; i++)
-                    _all[i].LocalTranslate(new Vector3((i < 2 ? -.035f : .035f), 0, (i < 2 ? i : i - 3) * .055f));
+                    _all[i].transform.LocalTranslate(new Vector3((i < 2 ? -.035f : .035f), 0, (i < 2 ? i : i - 3) * .055f));
                 _decoy = _all[3];
                 children = new int?[] { 2, null, null, 3, 0, null, 4, 1, null };
                 break;
 
             case 3: // X, bottom
                 for (int i = 0; i < 5; i++)
-                    _all[i].LocalTranslate(new Vector3(.055f * (2 * i % 3 - 1), 0, .035f * (2 * i / 3 - 1) + .015f));
+                    _all[i].transform.LocalTranslate(new Vector3(.055f * (2 * i % 3 - 1), 0, .035f * (2 * i / 3 - 1) + .015f));
                 _decoy = _all[2];
                 children = new int?[] { 1, 2, 0, 4, 2, 3 };
                 break;
 
             case 4: // X, left
                 for (int i = 0; i < 5; i++)
-                    _all[i].LocalTranslate(new Vector3(.035f * (2 * i % 3 - 1) + .02f, 0, .055f * (2 * i / 3 - 1)));
+                    _all[i].transform.LocalTranslate(new Vector3(.035f * (2 * i % 3 - 1) + .02f, 0, .055f * (2 * i / 3 - 1)));
                 _decoy = _all[2];
                 children = new int?[] { 1, 0, null, 2, 2, null, 4, 3, null };
                 break;
 
             case 5: // quarter circle with a bottom-left pivot
                 for (int i = 0; i < 4; i++)
-                    _all[i].LocalTranslate(new Vector3((float) (-.07 * Math.Sin(Math.PI * (i * .25 - .125)) + .02), 0, (float) (-.07 * Math.Cos(Math.PI * (i * .25 - .125)) + .02)));
-                _all[4].LocalTranslate(new Vector3(.02f, 0, .02f));
+                    _all[i].transform.LocalTranslate(new Vector3((float) (-.07 * Math.Sin(Math.PI * (i * .25 - .125)) + .02), 0, (float) (-.07 * Math.Cos(Math.PI * (i * .25 - .125)) + .02)));
+                _all[4].transform.LocalTranslate(new Vector3(.02f, 0, .02f));
                 _decoy = _all[4];
                 children = new int?[] { 0, 1, null, 4, 4, 2, 4, 4, 3 };
                 break;
 
             case 6: // quarter circle with a top-right pivot
                 for (int i = 0; i < 4; i++)
-                    _all[i].LocalTranslate(new Vector3((float) (.07 * Math.Sin(Math.PI * (i * .25 - .125)) - .02), 0, (float) (.07 * Math.Cos(Math.PI * (i * .25 - .125)) - .02)));
-                _all[4].LocalTranslate(new Vector3(-.02f, 0, -.02f));
+                    _all[i].transform.LocalTranslate(new Vector3((float) (.07 * Math.Sin(Math.PI * (i * .25 - .125)) - .02), 0, (float) (.07 * Math.Cos(Math.PI * (i * .25 - .125)) - .02)));
+                _all[4].transform.LocalTranslate(new Vector3(-.02f, 0, -.02f));
                 _decoy = _all[4];
                 children = new int?[] { 3, 4, 4, 2, 4, 4, null, 1, 0 };
                 break;
 
             case 7: // +
-                _all[0].LocalTranslate(new Vector3(.055f, 0, 0));
-                _all[1].LocalTranslate(new Vector3(0, 0, .055f));
-                _all[2].LocalTranslate(new Vector3(-.055f, 0, 0));
-                _all[3].LocalTranslate(new Vector3(0, 0, -.055f));
+                _all[0].transform.LocalTranslate(new Vector3(.055f, 0, 0));
+                _all[1].transform.LocalTranslate(new Vector3(0, 0, .055f));
+                _all[2].transform.LocalTranslate(new Vector3(-.055f, 0, 0));
+                _all[3].transform.LocalTranslate(new Vector3(0, 0, -.055f));
                 _decoy = _all[4];
                 children = new int?[] { null, 3, null, 0, 4, 2, null, 1, null };
                 break;
 
             case 8: // Z
-                _all[0].LocalTranslate(new Vector3(.055f, 0, -.055f));
-                _all[1].LocalTranslate(new Vector3(0, 0, .055f));
-                _all[2].LocalTranslate(new Vector3(-.055f, 0, .055f));
-                _all[3].LocalTranslate(new Vector3(0, 0, -.055f));
+                _all[0].transform.LocalTranslate(new Vector3(.055f, 0, -.055f));
+                _all[1].transform.LocalTranslate(new Vector3(0, 0, .055f));
+                _all[2].transform.LocalTranslate(new Vector3(-.055f, 0, .055f));
+                _all[3].transform.LocalTranslate(new Vector3(0, 0, -.055f));
                 _decoy = _all[4];
                 children = new int?[] { 0, 3, null, null, 4, null, null, 1, 2 };
                 break;
 
             case 9: // S
-                _all[0].LocalTranslate(new Vector3(.055f, 0, -.0275f));
-                _all[1].LocalTranslate(new Vector3(0, 0, .055f));
-                _all[2].LocalTranslate(new Vector3(-.055f, 0, .0275f));
-                _all[3].LocalTranslate(new Vector3(0, 0, -.055f));
+                _all[0].transform.LocalTranslate(new Vector3(.055f, 0, -.0275f));
+                _all[1].transform.LocalTranslate(new Vector3(0, 0, .055f));
+                _all[2].transform.LocalTranslate(new Vector3(-.055f, 0, .0275f));
+                _all[3].transform.LocalTranslate(new Vector3(0, 0, -.055f));
                 _decoy = _all[4];
                 children = new int?[] { 0, 3, null, 0, 4, 2, null, 1, 2 };
                 break;
@@ -285,7 +280,7 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         if (pieces.Length > 0 && pieces[0] == "press")
             skip = 1;
 
-        var list = new List<Transform>();
+        var list = new List<KMSelectable>();
         foreach (var piece in pieces.Skip(skip))
         {
             switch (piece)
@@ -303,8 +298,19 @@ public class RockPaperScissorsLizardSpockModule : MonoBehaviour
         yield return null;
         foreach (var item in list)
         {
-            item.GetComponent<KMSelectable>().OnInteract();
+            item.OnInteract();
             yield return new WaitForSeconds(.8f);
         }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        var selectables = new[] { Rock, Paper, Scissors, Lizard, Spock };
+        foreach (var i in _mustPress)
+            if (!_pressed.Contains(i))
+            {
+                selectables[i].OnInteract();
+                yield return new WaitForSeconds(.8f);
+            }
     }
 }
